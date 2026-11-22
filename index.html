@@ -120,6 +120,34 @@ td.tot{font-weight:900;color:var(--navy);background:#dbe8fd!important}
 .note{background:var(--warnbg);color:var(--warn);border-radius:14px;padding:8px 12px;font-size:12px;font-weight:700;margin-bottom:14px}
 @media(max-width:980px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}.week{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}.two{grid-template-columns:1fr}.me b{display:none}}
 @media(max-width:560px){.shell{padding:12px 12px 50px}.topbar{border-radius:24px;flex-wrap:wrap}nav{order:3;flex-basis:100%}.stat{font-size:34px}}
+
+.chk{max-height:210px;overflow:auto;background:#fff;border:1px solid #cfdcf6;border-radius:14px;padding:6px 10px;display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.ck{display:flex;align-items:center;gap:8px;margin:0;padding:7px 0;font-weight:400;color:var(--ink);font-size:13px;cursor:pointer}
+.ck input{width:18px;height:18px;flex:none;padding:0}
+.ck small{color:var(--mute)}
+.plist{margin-top:8px}.plist summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--navy)}
+.plist div{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+@media(max-width:700px){
+  body{font-size:15px}
+  .shell{padding:10px 10px 96px}
+  .topbar{backdrop-filter:none;background:rgba(255,255,255,.92);border-radius:20px;margin-bottom:16px;top:8px;padding:6px 8px}
+  .topbar .brand{flex:1}
+  nav{position:fixed;left:8px;right:8px;bottom:8px;background:#fff;border-radius:22px;padding:6px;box-shadow:0 8px 30px rgba(18,48,122,.25);z-index:30;gap:2px;order:0;flex-basis:auto}
+  nav button{flex:1 0 auto;padding:10px 8px;font-size:12px}
+  h1{font-size:24px}.toolbar h1{flex:1 0 100%}
+  input,select,textarea{font-size:16px}
+  .btn{padding:11px 16px}.btn.sm{padding:9px 13px}
+  .modal{align-items:end;padding:0}.modal>div{border-radius:26px 26px 0 0;max-height:94vh;padding:20px 16px 28px}
+  .chk{grid-template-columns:1fr}
+  .grid.g4{grid-template-columns:1fr 1fr;gap:10px}.card{padding:14px 16px}
+  .week{grid-template-columns:1fr 1fr}
+  .attrow{align-items:flex-start}.seg{width:100%;justify-content:space-between}.seg button{flex:1;padding:10px 6px}
+  .people{grid-template-columns:1fr}
+  .toast{bottom:92px;max-width:92vw;text-align:center}
+  .tablewrap{max-height:62vh}td.l,th.l{min-width:150px}
+  .login{margin-top:4vh}
+}
+@media(max-width:380px){.grid.g4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -129,8 +157,8 @@ td.tot{font-weight:900;color:var(--navy);background:#dbe8fd!important}
 <script>
 /* ============ CẤU HÌNH ============ */
 const CONFIG = {
-  API_URL: "",            // Dán địa chỉ Web App của Apps Script vào đây (xem HUONG_DAN.md). Để trống = chế độ dùng thử.
-  GOOGLE_CLIENT_ID: "",   // Dán OAuth Client ID (Web) vào đây.
+  API_URL: "https://script.google.com/macros/s/AKfycbw-XrF6vF5SdZcIKaIzYB9TXgVWKpvk6UtiWdUQnS7qLd8Mw-8xTqbRx9-4BDpfA9ae/exec",            // Dán địa chỉ Web App của Apps Script vào đây (xem HUONG_DAN.md). Để trống = chế độ dùng thử.
+  GOOGLE_CLIENT_ID: "788378161284-9k2a7i7t9ugkj7he8utopsaa55l0a5bf.apps.googleusercontent.com",   // Dán OAuth Client ID (Web) vào đây.
   TEN_CHI_DOAN: "Chi đoàn Trường Tiểu học Minh Hưng"
 };
 const SEED = {
@@ -141,14 +169,14 @@ const SEED = {
    "email": "",
    "sdt": "",
    "ngaySinh": "",
-   "chucVu": "Đoàn viên",
+   "chucVu": "Bí thư",
    "ngayVaoDoan": "",
    "diaChi": "",
    "gioiThieu": "",
    "anh": "",
    "nhom": "PH1",
    "trangThai": "Hoạt động",
-   "admin": false
+   "admin": true
   },
   {
    "id": "dv02",
@@ -156,14 +184,14 @@ const SEED = {
    "email": "",
    "sdt": "",
    "ngaySinh": "",
-   "chucVu": "Đoàn viên",
+   "chucVu": "Phó bí thư",
    "ngayVaoDoan": "",
    "diaChi": "",
    "gioiThieu": "",
    "anh": "",
    "nhom": "PH1",
    "trangThai": "Hoạt động",
-   "admin": false
+   "admin": true
   },
   {
    "id": "dv03",
@@ -321,14 +349,14 @@ const SEED = {
    "email": "",
    "sdt": "",
    "ngaySinh": "",
-   "chucVu": "Đoàn viên",
+   "chucVu": "Quản trị",
    "ngayVaoDoan": "",
    "diaChi": "",
    "gioiThieu": "",
    "anh": "",
    "nhom": "PH1",
    "trangThai": "Hoạt động",
-   "admin": false
+   "admin": true
   },
   {
    "id": "dv14",
@@ -951,7 +979,7 @@ const DB_KEY = "dv_demo_v1";
 const demoDB = {
   load() { try { const d = JSON.parse(localStorage.getItem(DB_KEY)); if (d && d.members) return d; } catch (e) { } return this.reset(); },
   save(d) { try { localStorage.setItem(DB_KEY, JSON.stringify(d)); } catch (e) { toast("Bộ nhớ trình duyệt đầy (ảnh quá nặng?)", true); } },
-  reset() { const d = JSON.parse(JSON.stringify(SEED)); d.members.forEach(m => { if (m.hoTen === "Nguyễn Phi Hùng") { m.admin = true; m.chucVu = "Quản trị"; } }); this.save(d); return d; }
+  reset() { const d = JSON.parse(JSON.stringify(SEED)); this.save(d); return d; }
 };
 const demoApi = {
   bootstrap(p) { const d = demoDB.load(); const me = d.members.find(m => m.id === p.memId); return { me, members: d.members, activities: d.activities, regs: d.regs }; },
@@ -960,7 +988,8 @@ const demoApi = {
   saveProfile({ member }, me) { const d = demoDB.load(); const i = d.members.findIndex(m => m.id === member.id); if (i < 0) throw new Error("Không tìm thấy đoàn viên"); if (!me.admin && member.id !== me.id) throw new Error("Không có quyền"); const old = d.members[i]; const keep = me.admin ? {} : { email: old.email, chucVu: old.chucVu, nhom: old.nhom, trangThai: old.trangThai, admin: old.admin }; d.members[i] = { ...old, ...member, ...keep }; demoDB.save(d); },
   addMember({ member }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); d.members.push({ ...member, id: uid("dv") }); demoDB.save(d); },
   deleteMember({ id }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); d.members = d.members.filter(m => m.id !== id); d.regs = d.regs.filter(r => r.memId !== id); demoDB.save(d); },
-  saveActivity({ activity }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); const a = { ...activity, ngayTam: false }; if (a.id) { const i = d.activities.findIndex(x => x.id === a.id); d.activities[i] = { ...d.activities[i], ...a }; } else { a.id = uid("hd"); d.activities.push(a); } demoDB.save(d); },
+  saveActivity({ activity, participants }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); const a = { ...activity, ngayTam: false }; if (a.id) { const i = d.activities.findIndex(x => x.id === a.id); d.activities[i] = { ...d.activities[i], ...a }; } else { a.id = uid("hd"); d.activities.push(a); }
+    if (Array.isArray(participants)) { participants.forEach(mid => { if (!d.regs.find(r => r.actId === a.id && r.memId === mid)) d.regs.push({ actId: a.id, memId: mid, at: new Date().toISOString(), att: "" }); }); d.regs = d.regs.filter(r => r.actId !== a.id || participants.includes(r.memId) || r.att); } demoDB.save(d); },
   deleteActivity({ id }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); d.activities = d.activities.filter(a => a.id !== id); d.regs = d.regs.filter(r => r.actId !== id); demoDB.save(d); },
   setAttendance({ actId, items }, me) { if (!me.admin) throw new Error("Không có quyền"); const d = demoDB.load(); for (const { memId, att } of items) { let r = d.regs.find(r => r.actId === actId && r.memId === memId); if (!r) { r = { actId, memId, at: new Date().toISOString(), att: "" }; d.regs.push(r); } r.att = att; } demoDB.save(d); }
 };
@@ -976,7 +1005,8 @@ async function call(action, payload = {}) {
 }
 function paintBusy() { let el = $("#ld"); if (S.busy > 0 && !el) { el = document.createElement("div"); el.id = "ld"; el.className = "loading"; document.body.appendChild(el); } else if (S.busy <= 0 && el) el.remove(); }
 async function refresh(first) {
-  const d = await call("bootstrap", DEMO ? { memId: S.demoMemId } : {});
+  const d = await call("bootstrap", DEMO ? { memId: S.demoMemId } : { claimId: S.claimId || "" });
+  S.claimId = "";
   S.members = d.members; S.activities = d.activities.slice().sort(sortAct); S.regs = d.regs; S.me = d.me;
   if (first && !S.selAct) S.selAct = null;
 }
@@ -987,24 +1017,39 @@ async function act(action, payload, okMsg) {
 
 /* ============ ĐĂNG NHẬP ============ */
 function logout(expired) {
+  loadNames().then(() => { if (!S.me) render(); });
   sessionStorage.removeItem("dv_token"); sessionStorage.removeItem("dv_demo"); S.token = ""; S.me = null; S.demoMemId = null;
   if (expired) toast("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại", true);
   render();
 }
 async function loginDemo(memId) { S.demoMemId = memId; sessionStorage.setItem("dv_demo", memId); await refresh(true); S.page = "tongquan"; render(); }
+function demoPick() {
+  const id = $("#demoWho").value; if (!id) return toast("Hãy chọn tên của bạn", true);
+  const m = demoDB.load().members.find(x => x.id === id);
+  if (m.email) return loginDemo(id);
+  modal(`<h2 style="font-size:18px;margin-bottom:6px">Liên kết Gmail</h2><p class="sub" style="margin:0 0 14px">Chào ${esc(m.hoTen)}. Nhập Gmail của bạn để liên kết với tên này (bản chạy thật sẽ mở cửa sổ đăng nhập Google).</p>
+    <form id="fLink"><input type="hidden" name="mid" value="${id}"><div class="field"><input type="email" name="email" required placeholder="ten@gmail.com" autofocus></div><div class="row"><span class="sp"></span><button type="button" class="btn ghost" data-act="close">Hủy</button><button class="btn">Liên kết &amp; vào</button></div></form>`);
+}
+async function loadNames() {
+  if (DEMO) { S.names = SEED.members.map(m => ({ id: m.id, hoTen: m.hoTen })); return; }
+  try { const r = await fetch(CONFIG.API_URL + "?action=names"); const j = await r.json(); S.names = j.ok ? j.data : []; } catch (e) { S.names = []; }
+}
 async function onGoogle(resp) {
-  S.token = resp.credential; sessionStorage.setItem("dv_token", S.token);
+  S.token = resp.credential; sessionStorage.setItem("dv_token", S.token); S.claimId = ($("#who") || {}).value || "";
   try { await refresh(true); render(); } catch (e) { S.token = ""; sessionStorage.removeItem("dv_token"); toast(e.message, true); render(); }
 }
 function loginView() {
+  const names = (S.names || []).slice().sort((a, b) => lastName(a.hoTen).localeCompare(lastName(b.hoTen), "vi"));
   let body;
   if (DEMO) {
-    const opts = (SEED.members).map(m => `<option value="${m.id}">${esc(m.hoTen)}${m.hoTen === "Nguyễn Phi Hùng" ? " (quản trị)" : ""}</option>`).join("");
+    const opts = SEED.members.map(m => `<option value="${m.id}">${esc(m.hoTen)}${m.admin ? " (quản trị)" : ""}</option>`).join("");
     body = `<div class="note">Chế độ dùng thử: dữ liệu chỉ lưu trong trình duyệt này.</div>
-      <div class="field" style="text-align:left"><label>Đăng nhập với tư cách</label><select id="demoWho">${opts}</select></div>
-      <button class="btn" data-act="demoLogin" style="width:100%;justify-content:center">Vào xem thử</button>`;
+      <div class="field" style="text-align:left"><label>Bạn là ai?</label><select id="demoWho"><option value="">— Chọn tên của bạn —</option>${opts}</select></div>
+      <button class="btn" data-act="demoLogin" style="width:100%;justify-content:center">Tiếp tục</button>`;
   } else {
-    body = `<div id="gbtn" style="display:flex;justify-content:center;margin:10px 0"></div><p class="sub">Dùng email Google đã được đăng ký trong danh sách đoàn viên.</p>`;
+    body = `<div class="field" style="text-align:left"><label>Lần đầu đăng nhập: chọn tên của bạn</label><select id="who"><option value="">— Chọn tên (bỏ qua nếu đã liên kết) —</option>${names.map(n => `<option value="${n.id}">${esc(n.hoTen)}</option>`).join("")}</select></div>
+      <div id="gbtn" style="display:flex;justify-content:center;margin:14px 0 6px;min-height:44px"></div>
+      <p class="sub" style="font-size:12px;margin:8px 0 0">Chọn tên rồi bấm đăng nhập Google, Gmail của bạn sẽ được liên kết với tên đó. Những lần sau chỉ cần bấm đăng nhập Google.</p>`;
   }
   return `<div class="login"><div class="card"><div class="brand" style="display:inline-flex;margin-bottom:18px"><i>ĐV</i>Đoàn viên</div>
     <h1 style="font-size:28px"><b>Điểm danh</b> hoạt động</h1><p class="sub" style="margin:0 0 20px">${esc(CONFIG.TEN_CHI_DOAN)}</p>${body}</div></div>`;
@@ -1016,7 +1061,7 @@ function mountGoogle() {
 }
 
 /* ============ KHUNG TRANG ============ */
-const PAGES = [["tongquan", "Tổng quan"], ["hoatdong", "Hoạt động"], ["diemdanh", "Điểm danh", true], ["baocao", "Báo cáo"], ["doanvien", "Đoàn viên"], ["hoso", "Hồ sơ của tôi"]];
+const PAGES = [["tongquan", "Tổng quan"], ["hoatdong", "Hoạt động"], ["diemdanh", "Điểm danh", true], ["baocao", "Báo cáo"], ["doanvien", "Đoàn viên"], ["hoso", "Hồ sơ"]];
 function render() {
   const app = $("#app");
   if (!S.me) { app.innerHTML = `<div class="shell">${loginView()}</div>`; if (!DEMO) mountGoogle(); return; }
@@ -1057,7 +1102,7 @@ function pgOverview() {
     <div class="card dark"><div class="stat">${isAdmin() ? pendingAtt : mine}<small style="color:#b9ccf5">${isAdmin() ? "chờ điểm danh" : "lần của bạn"}</small></div><div class="sub">${isAdmin() ? "lượt đăng ký đã qua ngày, chưa điểm danh" : "bạn đã có mặt trong tháng"}</div></div>
   </div>
   <div class="grid g2" style="margin-bottom:16px">
-    <div class="card"><div class="row" style="margin-bottom:8px"><h2>Hoạt động sắp tới</h2><span class="sp"></span><button class="btn ghost sm" data-act="nav" data-p="hoatdong">Xem tất cả</button></div>
+    <div class="card"><div class="row" style="margin-bottom:8px"><h2>Hoạt động sắp tới</h2><span class="sp"></span>${isAdmin() ? `<button class="btn sm" data-act="newAct">+ Tạo hoạt động</button>` : ""}<button class="btn ghost sm" data-act="nav" data-p="hoatdong">Xem tất cả</button></div>
       <div class="list">${upcoming.map(actRow).join("") || `<div class="empty">Chưa có hoạt động sắp tới.</div>`}</div></div>
     <div class="card"><h2 style="margin-bottom:12px">Tham gia nhiều nhất tháng này</h2>
       ${rank.map(r => `<div class="row" style="margin-bottom:10px">${avatar(r.m, "")}<div style="flex:1"><div class="row"><b style="font-size:12px">${esc(r.m.hoTen)}</b><span class="sp"></span><b>${r.n}</b></div><div class="bar" style="height:10px;min-width:0"><i style="width:${r.n / maxN * 100}%;padding:0"></i></div></div></div>`).join("")}
@@ -1075,13 +1120,15 @@ function actRow(a) {
   else if (r && r.att === "vang") st = `<span class="chip bad">Vắng</span>`;
   else if (r) st = `<span class="chip blue">Đã đăng ký</span>`;
   else if (a.dangKy !== "mo") st = `<span class="chip gray">Đã đóng đăng ký</span>`;
-  const count = S.regs.filter(x => x.actId === a.id).length;
+  const rl = S.regs.filter(x => x.actId === a.id), count = rl.length;
+  const who = rl.map(x => ({ m: memById(x.memId), att: x.att })).filter(x => x.m).sort((p, q) => lastName(p.m.hoTen).localeCompare(lastName(q.m.hoTen), "vi"));
+  const plist = count ? `<details class="plist"><summary>Danh sách tham gia (${count})</summary><div>${who.map(x => `<span class="chip ${x.att === "co" ? "ok" : x.att === "vang" ? "bad" : "blue"}">${esc(x.m.hoTen)}</span>`).join("")}</div></details>` : "";
   let btn = "";
   if (a.dangKy === "mo" && !(r && r.att)) btn = r ? `<button class="btn red sm" data-act="unreg" data-id="${a.id}">Hủy đăng ký</button>` : `<button class="btn sm" data-act="reg" data-id="${a.id}">Đăng ký</button>`;
   const adm = isAdmin() ? `<button class="btn ghost sm" data-act="editAct" data-id="${a.id}">Sửa</button><button class="btn ghost sm" data-act="goAtt" data-id="${a.id}">Điểm danh</button>` : "";
   return `<div class="act"><div class="date"><b>${a.ngayTam ? "?" : d[2]}</b><span>${a.ngayTam ? "Chưa rõ" : "Th" + +d[1]}</span></div>
     <div style="flex:1;min-width:0"><h3>${esc(a.ten)}</h3><div class="sub" style="font-size:12px">${[a.gio, a.diaDiem].filter(Boolean).map(esc).join(" · ") || "&nbsp;"}${a.moTa ? `<div>${esc(a.moTa)}</div>` : ""}</div>
-      <div class="row wrap" style="margin-top:8px">${st}<span class="chip gray">${count} người đăng ký</span>${a.ngayTam ? `<span class="chip warn">Ngày tạm – cần cập nhật</span>` : ""}${btn}${adm}</div></div></div>`;
+      <div class="row wrap" style="margin-top:8px">${st}<span class="chip gray">${count} người đăng ký</span>${a.ngayTam ? `<span class="chip warn">Ngày tạm – cần cập nhật</span>` : ""}${btn}${adm}</div>${plist}</div></div>`;
 }
 function pgActivities() {
   const acts = actsOfMonth(S.month);
@@ -1090,11 +1137,14 @@ function pgActivities() {
 }
 function actForm(a) {
   a = a || { ten: "", ngay: TODAY, gio: "", diaDiem: "", moTa: "", dangKy: "mo" };
+  const joined = a.id ? S.regs.filter(r => r.actId === a.id).map(r => r.memId) : [];
+  const checks = S.members.map(m => `<label class="ck"><input type="checkbox" name="part" value="${m.id}" ${joined.includes(m.id) ? "checked" : ""}><span>${esc(m.hoTen)}${m.trangThai !== "Hoạt động" ? ` <small>(${esc(m.trangThai.toLowerCase())})</small>` : ""}</span></label>`).join("");
   return `<form id="fAct"><h2 style="margin-bottom:14px;font-size:20px">${a.id ? "Sửa" : "Tạo"} hoạt động</h2><input type="hidden" name="id" value="${esc(a.id || "")}">
-    <div class="field"><label>Tên hoạt động *</label><input name="ten" required value="${esc(a.ten)}"></div>
-    <div class="two"><div class="field"><label>Ngày *</label><input type="date" name="ngay" required value="${esc(a.ngay)}"></div><div class="field"><label>Giờ</label><input name="gio" placeholder="VD: 7h30 – 11h" value="${esc(a.gio)}"></div></div>
+    <div class="field"><label>Tên phong trào / hoạt động *</label><input name="ten" required value="${esc(a.ten)}"></div>
+    <div class="two"><div class="field"><label>Thời gian – ngày *</label><input type="date" name="ngay" required value="${esc(a.ngay)}"></div><div class="field"><label>Thời gian – giờ</label><input name="gio" placeholder="VD: 7h30 – 11h" value="${esc(a.gio)}"></div></div>
     <div class="field"><label>Địa điểm</label><input name="diaDiem" value="${esc(a.diaDiem)}"></div>
     <div class="field"><label>Ghi chú</label><textarea name="moTa" rows="2">${esc(a.moTa)}</textarea></div>
+    <div class="field"><div class="row" style="margin-bottom:4px"><label style="margin:0">Danh sách đoàn viên tham gia</label><span class="sp"></span><button type="button" class="btn ghost sm" data-act="ckAll">Chọn tất cả</button><button type="button" class="btn ghost sm" data-act="ckNone">Bỏ chọn</button></div><div class="chk">${checks}</div></div>
     <div class="field"><label>Đăng ký</label><select name="dangKy"><option value="mo" ${a.dangKy === "mo" ? "selected" : ""}>Đang mở đăng ký</option><option value="dong" ${a.dangKy === "dong" ? "selected" : ""}>Đã đóng đăng ký</option></select></div>
     <div class="row" style="margin-top:16px">${a.id ? `<button type="button" class="btn red" data-act="delAct" data-id="${a.id}">Xóa</button>` : ""}<span class="sp"></span><button type="button" class="btn ghost" data-act="close">Hủy</button><button class="btn">Lưu</button></div></form>`;
 }
@@ -1257,7 +1307,7 @@ document.addEventListener("click", async e => {
   const t = e.target.closest("[data-act]"); if (!t) return; const a = t.dataset.act, id = t.dataset.id;
   if (a === "bg") { if (e.target === t) closeModal(); return; }
   if (a === "nav") { S.page = t.dataset.p; render(); window.scrollTo(0, 0); }
-  else if (a === "demoLogin") loginDemo($("#demoWho").value);
+  else if (a === "demoLogin") demoPick();
   else if (a === "menu") modal(`<h2 style="font-size:18px;margin-bottom:6px">${esc(S.me.hoTen)}</h2><div class="sub" style="margin-bottom:16px">${esc(S.me.email || (DEMO ? "Chế độ dùng thử" : ""))}${isAdmin() ? " · Quản trị viên" : ""}</div><div class="row wrap"><button class="btn ghost" data-act="close">Đóng</button>${DEMO ? `<button class="btn red" data-act="resetDemo">Đặt lại dữ liệu mẫu</button>` : ""}<span class="sp"></span><button class="btn" data-act="logout">Đăng xuất</button></div>`);
   else if (a === "close") closeModal();
   else if (a === "logout") { closeModal(); logout(); }
@@ -1267,6 +1317,7 @@ document.addEventListener("click", async e => {
   else if (a === "newAct") { modal(actForm()); }
   else if (a === "editAct") { modal(actForm(actById(id))); }
   else if (a === "delAct") { if (await ask("Xóa hoạt động này và toàn bộ lượt đăng ký/điểm danh của nó?")) { closeModal(); act("deleteActivity", { id }, "Đã xóa hoạt động"); } }
+  else if (a === "ckAll" || a === "ckNone") t.closest("form").querySelectorAll("[name=part]").forEach(c => c.checked = a === "ckAll");
   else if (a === "goAtt") { S.selAct = id; S.page = "diemdanh"; render(); }
   else if (a === "att") act("setAttendance", { actId: S.selAct, items: [{ memId: t.dataset.m, att: t.dataset.v }] });
   else if (a === "allPresent") act("setAttendance", { actId: S.selAct, items: S.regs.filter(r => r.actId === S.selAct).map(r => ({ memId: r.memId, att: "co" })) }, "Đã đánh dấu có mặt");
@@ -1285,13 +1336,15 @@ document.addEventListener("change", async e => {
 });
 document.addEventListener("submit", async e => {
   e.preventDefault(); const f = e.target, fid = f.getAttribute("id");
-  if (fid === "fAct") { const o = readForm(f); if (!o.id) delete o.id; closeModal(); act("saveActivity", { activity: o }, "Đã lưu hoạt động"); }
+  if (fid === "fAct") { const o = readForm(f); const participants = new FormData(f).getAll("part"); delete o.part; if (!o.id) delete o.id; closeModal(); act("saveActivity", { activity: o, participants }, "Đã lưu hoạt động"); }
+  else if (fid === "fLink") { const o = readForm(f); const d = demoDB.load(); d.members.find(m => m.id === o.mid).email = o.email.toLowerCase(); demoDB.save(d); closeModal(); loginDemo(o.mid); }
   else if (fid === "fProf") { const o = readForm(f); const adminEdit = !!f.elements.nhom; closeModal();
     if (!o.id) act("addMember", { member: o }, "Đã thêm đoàn viên"); else act("saveProfile", { member: o }, "Đã lưu hồ sơ"); }
 });
 
 /* ============ KHỞI ĐỘNG ============ */
 (async function init() {
+  if (!(DEMO ? sessionStorage.getItem("dv_demo") : S.token)) await loadNames();
   render();
   try {
     if (DEMO && sessionStorage.getItem("dv_demo")) { S.demoMemId = sessionStorage.getItem("dv_demo"); await refresh(true); render(); }
